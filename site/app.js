@@ -17,9 +17,9 @@ async function load() {
     all = j.cves;
     loaded = true;
     const when = new Date(j.generated).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
-    $("meta").textContent = `${j.count.toLocaleString()} CVEs, updated ${when}`;
+    $("meta").textContent = `${j.count.toLocaleString()} CVEs monitored &bull; Updated ${when}`;
   } catch {
-    $("meta").textContent = "CVE data is not available yet. Please check back soon.";
+    $("meta").textContent = "CVE threat intelligence stream is not available yet. Please check back soon.";
   }
   render();
 }
@@ -41,8 +41,8 @@ function overview() {
   if (reducedMotion) bar.classList.add("ready"); else requestAnimationFrame(() => requestAnimationFrame(() => bar.classList.add("ready")));
   $("stats").innerHTML =
     parts.map(([k, l, v]) => `<li><b>${n[k].toLocaleString()}</b><span><i style="--dot:var(${v})"></i>${l}</span></li>`).join("") +
-    `<li class="sep"><b>${kev.toLocaleString()}</b><span>Known exploited</span></li>` +
-    `<li><b>${day.toLocaleString()}</b><span>Last 24 hours</span></li>`;
+    `<li class="sep"><b>${kev.toLocaleString()}</b><span><i style="--dot:var(--crit)"></i>Known exploited</span></li>` +
+    `<li><b>${day.toLocaleString()}</b><span><i style="--dot:var(--accent-color)"></i>Last 24 hours</span></li>`;
 }
 
 function apply() {
@@ -65,28 +65,33 @@ function item(c) {
   const sev = sevOf(c);
   const scored = c.score != null;
   const snippet = c.desc.length > 160 ? c.desc.slice(0, 160).trimEnd() + "\u2026" : c.desc;
-  const facts = [
-    c.vendors.length ? `Vendors: ${esc(c.vendors.slice(0, 8).join(", "))}` : "",
-    c.products.length ? `Products: ${esc(c.products.slice(0, 8).join(", "))}` : "",
-    c.cwes.length ? esc(c.cwes.join(", ")) : "",
-  ].filter(Boolean).join(" &middot; ");
+
+  const vendorTags = c.vendors.slice(0, 6).map((v) => `<span class="tech-tag">${esc(v)}</span>`).join("");
+  const productTags = c.products.slice(0, 6).map((p) => `<span class="tech-tag">${esc(p)}</span>`).join("");
+  const cweTags = c.cwes.slice(0, 4).map((w) => `<span class="tech-tag tech-tag-cwe">${esc(w)}</span>`).join("");
+  const tagsHtml = (vendorTags || productTags || cweTags) ? `<div class="tech-tags">${vendorTags}${productTags}${cweTags}</div>` : "";
+
   const refs = c.refs.filter((u) => /^https?:\/\//.test(u)).map((u) => {
-    let host = u; try { host = new URL(u).hostname; } catch {}
-    return `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(host)}</a>`;
+    let host = u; try { host = new URL(u).hostname.replace(/^www\./, ""); } catch {}
+    return `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer" class="ref-link"><span>${esc(host)}</span><span style="font-size: 0.72rem; opacity: 0.8;">&#8599;</span></a>`;
   }).join("");
+
   return `
   <li class="cve sev-${sev.toLowerCase()}">
-    <div class="score" aria-label="${scored ? `CVSS ${c.score}, ` : ""}${esc(LABEL[sev] || "Unscored")} severity"><b>${scored ? esc(c.score) : "&ndash;"}</b><span>${esc(LABEL[sev] || "Unscored")}</span></div>
+    <div class="score" aria-label="${scored ? `CVSS ${c.score}, ` : ""}${esc(LABEL[sev] || "Unscored")} severity">
+      <b>${scored ? esc(c.score) : "&ndash;"}</b>
+      <span>${esc(LABEL[sev] || "Unscored")}</span>
+    </div>
     <div class="body">
       <div class="head">
         <a class="id" href="https://nvd.nist.gov/vuln/detail/${esc(c.id)}" target="_blank" rel="noopener noreferrer">${esc(c.id)}</a>
-        ${c.kev ? '<span class="kevtag" title="Listed in the CISA Known Exploited Vulnerabilities catalog">Known exploited</span>' : ""}
+        ${c.kev ? '<span class="kevtag" title="Listed in the CISA Known Exploited Vulnerabilities catalog"><span class="status-dot" style="background:#fca5a5; box-shadow:0 0 6px #ef4444; width:5px; height:5px;"></span>Known exploited</span>' : ""}
         <span class="when">Published ${esc(c.published.slice(0, 10))}</span>
       </div>
       <details class="more-desc">
         <summary><span class="snip">${esc(snippet)}</span><span class="sr">Show details</span><span class="hide">Hide details</span></summary>
         <p class="full">${esc(c.desc)}</p>
-        ${facts ? `<p class="facts">${facts}</p>` : ""}
+        ${tagsHtml}
         ${refs ? `<div class="refs">${refs}</div>` : ""}
       </details>
     </div>
@@ -102,7 +107,7 @@ function render() {
   const start = page * PAGE;
   const slice = view.slice(start, start + PAGE);
   $("rows").innerHTML = slice.map(item).join("") ||
-    `<li class="empty">${loaded ? "No CVEs match these filters. Try lowering the severity or clearing the search." : "CVE data is not available yet."}</li>`;
+    `<li class="empty">${loaded ? "No CVEs match these filters. Try lowering the severity or clearing the search." : "CVE threat intelligence stream is not available yet."}</li>`;
   $("count").textContent = view.length
     ? `Showing ${(start + 1).toLocaleString()}\u2013${(start + slice.length).toLocaleString()} of ${view.length.toLocaleString()} CVEs`
     : "0 CVEs";
@@ -170,6 +175,7 @@ $("subform").addEventListener("submit", async (ev) => {
 
 load();
 initTurnstile();
+
 // Support (Patreon) dialog
 {
   const dlg = $("supportDlg");

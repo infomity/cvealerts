@@ -1,55 +1,116 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow,noarchive">
-<meta name="referrer" content="no-referrer">
-<title>Admin</title>
-<link rel="stylesheet" href="/admin.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <title>Admin &bull; CVE Alert &bull; Infomity</title>
+  
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12 2 2 7 12 12 22 7 12 2'%3E%3C/polygon%3E%3Cpolyline points='2 17 12 22 22 17'%3E%3C/polyline%3E%3Cpolyline points='2 12 12 17 22 12'%3E%3C/polyline%3E%3C/svg%3E">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/admin.css">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('theme') || localStorage.getItem('cvea-theme');
+      if (saved === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
 </head>
 <body>
 <main>
-  <section id="login" hidden>
-    <h1>Admin sign-in</h1>
-    <label for="pw">Password</label>
-    <input id="pw" type="password" autocomplete="current-password" maxlength="256">
-    <button id="loginBtn" type="button">Sign in</button>
+  <!-- Admin Sign In Screen -->
+  <section id="login" class="admin-card" hidden>
+    <div class="admin-brand-header">
+      <div class="app-icon" style="width: 42px; height: 42px; border-radius: 12px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem auto;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px; color: #10b981;">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+      </div>
+      <h1 class="gradient-text">Admin Sign-in</h1>
+      <p class="admin-subtitle">CVE Alert &bull; Infomity Security Console</p>
+    </div>
+
+    <label for="pw">Master Password</label>
+    <input id="pw" type="password" autocomplete="current-password" maxlength="256" placeholder="Enter admin credentials">
+    <button id="loginBtn" class="btn-glow" type="button">Sign In &rarr;</button>
     <p id="loginMsg" role="alert"></p>
   </section>
 
-  <section id="app" hidden>
-    <header>
-      <h1>Subscribers</h1>
-      <button id="logoutBtn" type="button">Sign out</button>
+  <!-- Admin Dashboard Screen -->
+  <section id="app" class="admin-dashboard" hidden>
+    <header class="admin-header">
+      <div class="admin-brand">
+        <div class="app-icon" style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; color: #10b981;">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h1>Subscribers &amp; Telemetry</h1>
+          <span class="admin-badge">SECURITY OPERATIONS &bull; INFOMITY LABS</span>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <a href="/" class="btn-glass btn-sm" target="_blank">&larr; Live Site</a>
+        <button id="logoutBtn" class="btn-glass btn-sm" type="button">Sign Out</button>
+      </div>
     </header>
-    <p class="note">Emails are masked. Revealing an address is recorded in the audit log. Sessions end after 30 minutes.</p>
-    <div id="counts" class="counts"></div>
-    <div class="bar">
-      <select id="status" aria-label="Status filter">
-        <option value="">All statuses</option>
-        <option value="active">Active</option>
-        <option value="pending">Pending</option>
-        <option value="unsubscribed">Unsubscribed</option>
-      </select>
-      <input id="q" type="search" placeholder="Search email text" maxlength="100" autocomplete="off">
-      <button id="searchBtn" type="button">Search</button>
+
+    <div class="admin-card">
+      <p class="note">Emails are masked by default. Revealing an address is recorded in the immutable audit log. Sessions expire after 30 minutes.</p>
+
+      <div id="counts" class="counts"></div>
+
+      <div class="bar">
+        <select id="status" aria-label="Status filter">
+          <option value="">All statuses</option>
+          <option value="active">Active</option>
+          <option value="pending">Pending</option>
+          <option value="unsubscribed">Unsubscribed</option>
+        </select>
+        <input id="q" type="search" placeholder="Search email text" maxlength="100" autocomplete="off">
+        <button id="searchBtn" class="btn-glass" type="button">Search</button>
+      </div>
+
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Email</th><th>Status</th><th>Filters</th><th>Created</th><th>Verified</th><th>Last digest</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div class="bar pagination-bar">
+        <button id="prev" class="btn-glass btn-sm" type="button">&larr; Previous</button>
+        <span id="pageInfo"></span>
+        <button id="next" class="btn-glass btn-sm" type="button">Next &rarr;</button>
+      </div>
     </div>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>ID</th><th>Email</th><th>Status</th><th>Filters</th><th>Created</th><th>Verified</th><th>Last digest</th><th>Actions</th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
-    </div>
-    <div class="bar">
-      <button id="prev" type="button">Previous</button>
-      <span id="pageInfo"></span>
-      <button id="next" type="button">Next</button>
-    </div>
-    <details id="auditBox">
-      <summary>Audit log (last 50)</summary>
-      <div class="scroll"><table><thead><tr><th>Time</th><th>Action</th><th>Subscriber</th><th>Actor (hash)</th></tr></thead><tbody id="audit"></tbody></table></div>
+
+    <details id="auditBox" class="admin-card audit-card">
+      <summary>Audit Log (Last 50 Events)</summary>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr><th>Time</th><th>Action</th><th>Subscriber</th><th>Actor (hash)</th></tr>
+          </thead>
+          <tbody id="audit"></tbody>
+        </table>
+      </div>
     </details>
+
     <p id="msg" role="status"></p>
   </section>
 </main>

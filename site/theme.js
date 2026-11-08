@@ -1,41 +1,95 @@
-// Light/dark theme: follows the system setting until the visitor picks one with the header button.
-// The choice is kept in localStorage (best effort; works without it). Loaded in <head> so there is no flash.
+// Infomity Obsidian Theme Controller
+// Defaults to dark obsidian luxury theme unless explicitly toggled to light.
+// Preserves choices in localStorage and syncs meta theme-color and UI icons.
 (function () {
-  var KEY = "cvea-theme";
-  var root = document.documentElement;
-  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  const KEY_THEME = "theme";
+  const KEY_LEGACY = "cvea-theme";
+  const root = document.documentElement;
 
   function saved() {
-    try { var v = localStorage.getItem(KEY); return v === "light" || v === "dark" ? v : null; } catch (e) { return null; }
+    try {
+      const v = localStorage.getItem(KEY_THEME) || localStorage.getItem(KEY_LEGACY);
+      return v === "light" || v === "dark" ? v : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   function apply(theme) {
-    root.setAttribute("data-theme", theme);
-    var color = theme === "dark" ? "#1e293b" : "#ffffff";
-    var metas = document.querySelectorAll('meta[name="theme-color"]');
-    for (var i = 0; i < metas.length; i++) metas[i].setAttribute("content", color);
-    var btn = document.getElementById("themeBtn");
+    if (theme === "light") {
+      root.setAttribute("data-theme", "light");
+    } else {
+      root.removeAttribute("data-theme");
+    }
+
+    const isLight = theme === "light";
+    const color = isLight ? "#f8fafc" : "#07090e";
+    const metas = document.querySelectorAll('meta[name="theme-color"]');
+    metas.forEach(function (m) { m.setAttribute("content", color); });
+
+    const icon = document.getElementById("themeIcon");
+    if (icon) {
+      icon.textContent = isLight ? "☀️" : "🌙";
+    }
+
+    const btn = document.getElementById("themeBtn");
     if (btn) {
-      var label = theme === "dark" ? "Switch to light theme" : "Switch to dark theme";
+      const label = isLight ? "Switch to dark theme" : "Switch to light theme";
       btn.setAttribute("aria-label", label);
       btn.setAttribute("title", label);
     }
   }
 
-  apply(saved() || (mq && mq.matches ? "dark" : "light"));
+  // Initial apply: default to obsidian dark unless user previously picked light
+  const initial = saved() === "light" ? "light" : "dark";
+  apply(initial);
 
   document.addEventListener("DOMContentLoaded", function () {
-    apply(root.getAttribute("data-theme"));
-    var btn = document.getElementById("themeBtn");
-    if (!btn) return;
-    btn.addEventListener("click", function () {
-      var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      try { localStorage.setItem(KEY, next); } catch (e) { /* private mode: still switches for this visit */ }
-      apply(next);
+    apply(saved() === "light" ? "light" : "dark");
+    const btn = document.getElementById("themeBtn");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        const isCurrentLight = root.getAttribute("data-theme") === "light";
+        const next = isCurrentLight ? "dark" : "light";
+        try {
+          localStorage.setItem(KEY_THEME, next);
+          localStorage.setItem(KEY_LEGACY, next);
+        } catch (e) {}
+        apply(next);
+      });
+    }
+  });
+})();
+
+// Mobile navigation menu toggle helper
+window.toggleMobileMenu = function () {
+  const container = document.querySelector(".navbar-container");
+  const btn = document.getElementById("mobileMenuBtn");
+  if (!container) return;
+  const isOpen = container.classList.toggle("is-open");
+  if (btn) btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+};
+
+// Auto-close menu when clicking outside or clicking any nav link
+document.addEventListener("click", function (e) {
+  const container = document.querySelector(".navbar-container");
+  if (!container || !container.classList.contains("is-open")) return;
+  if (!container.contains(e.target)) {
+    container.classList.remove("is-open");
+    const btn = document.getElementById("mobileMenuBtn");
+    if (btn) btn.setAttribute("aria-expanded", "false");
+  }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".navbar-links .nav-link").forEach(function (link) {
+    link.addEventListener("click", function () {
+      const container = document.querySelector(".navbar-container");
+      if (container && container.classList.contains("is-open")) {
+        container.classList.remove("is-open");
+        const btn = document.getElementById("mobileMenuBtn");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      }
     });
   });
-
-  if (mq && mq.addEventListener) {
-    mq.addEventListener("change", function (e) { if (!saved()) apply(e.matches ? "dark" : "light"); });
-  }
-})();
+});

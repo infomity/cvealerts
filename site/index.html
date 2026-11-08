@@ -1,175 +1,290 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>CVE Alert - new vulnerabilities and email alerts</title>
-<meta name="description" content="Browse newly published CVEs filtered by severity, known exploitation and keyword, and get a daily email with only the vulnerabilities that match.">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1e293b" media="(prefers-color-scheme: dark)">
-<meta property="og:title" content="CVE Alert">
-<meta property="og:description" content="Newly published CVEs, filtered to what you run, with verified email alerts.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%232563eb' d='M16 2l11 4v9c0 7-4.6 12.3-11 15C9.6 27.3 5 22 5 15V6z'/%3E%3Cpath fill='%23fff' d='M15 9h2v9h-2zm0 11h2v2h-2z'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="/style.css">
-<script src="/theme.js"></script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>CVE Alert — Real-Time Vulnerability Intelligence &amp; Precision Alerts | Infomity</title>
+  <meta name="description" content="Free, open-source vulnerability intelligence platform. Filter newly published CVEs by CVSS severity, CISA KEV exploitation, and EPSS likelihood, backed by daily automated email alerts.">
+  <meta name="robots" content="index, follow">
+
+  <meta name="theme-color" content="#07090e" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="CVE Alert — Threat Intelligence &amp; Precision Alerts | Infomity">
+  <meta property="og:description" content="Newly published CVEs, filtered to what you run, with verified daily email alerts and zero telemetry.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cvealerts.infomity.workers.dev">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12 2 2 7 12 12 22 7 12 2'%3E%3C/polygon%3E%3Cpolyline points='2 17 12 22 22 17'%3E%3C/polyline%3E%3Cpolyline points='2 12 12 17 22 12'%3E%3C/polyline%3E%3C/svg%3E">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/style.css">
+  <script src="/theme.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 <body>
-<a class="skip" href="#feed">Skip to CVE list</a>
+  <a class="skip" href="#feed">Skip to CVE list</a>
 
-<header class="top">
-  <div class="wrap bar">
-    <a class="brand" href="/" aria-label="CVE Alert home">
-      <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true" focusable="false"><path class="mark" d="M16 2l11 4v9c0 7-4.6 12.3-11 15C9.6 27.3 5 22 5 15V6z"/><path class="mark-glyph" d="M15 9h2v9h-2zm0 11h2v2h-2z"/></svg>
-      <span>CVE Alert</span>
-    </a>
-    <div class="actions">
-      <button type="button" id="themeBtn" class="btn btn-sm btn-icon" aria-label="Switch to dark theme" title="Switch to dark theme">
-        <svg class="ic-moon" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" focusable="false"><path fill="currentColor" d="M21 14.5A9 9 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z"/></svg>
-        <svg class="ic-sun" viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3L7 7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7"/></svg>
-      </button>
-      <button type="button" class="btn btn-sm btn-support" data-support aria-label="Support Infomity on Patreon">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 5 6.1 5c2 0 3.4 1.1 4.2 2.4h3.4C14.5 6.1 15.9 5 17.9 5c3.4 0 5.2 3.4 3.7 6.8C19.5 16.4 12 21 12 21z"/></svg>
-        <span>Support</span>
-      </button>
-      <a class="btn btn-primary btn-sm" href="#subscribe">Get alerts</a>
-    </div>
-  </div>
-</header>
-
-<main class="wrap">
-  <div class="intro">
-    <h1>Newly published CVEs</h1>
-    <p class="lede">Filter by severity, known exploitation and keyword, or get a daily email with only the vulnerabilities that match.</p>
-    <p id="meta" class="meta" role="status">Loading CVE data</p>
-  </div>
-
-  <section class="overview" aria-label="Severity overview">
-    <div id="sevbar" class="sevbar" role="img" aria-label="Severity distribution"></div>
-    <ul id="stats" class="legend"></ul>
-  </section>
-
-  <div class="layout">
-    <section id="feed" aria-labelledby="feed-h">
-      <h2 id="feed-h" class="sr">CVE list</h2>
-
-      <div class="filters" role="search">
-        <div class="search">
-          <label class="sr" for="q">Search CVEs</label>
-          <input id="q" type="search" placeholder="Search CVE ID, product, vendor or keyword" autocomplete="off" enterkeyhint="search">
+  <!-- Floating Capsule Navbar -->
+  <header class="navbar-wrapper">
+    <div class="navbar-container">
+      <a href="/" class="navbar-brand" aria-label="CVE Alert Home">
+        <div class="app-icon" style="width: 38px; height: 38px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: #10b981;">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
         </div>
-
-        <fieldset class="seg" id="sev">
-          <legend class="sr">Minimum severity</legend>
-          <label><input type="radio" name="sev" value="0" checked><span>All</span></label>
-          <label><input type="radio" name="sev" value="1"><span>Low+</span></label>
-          <label><input type="radio" name="sev" value="2"><span>Medium+</span></label>
-          <label><input type="radio" name="sev" value="3"><span>High+</span></label>
-          <label><input type="radio" name="sev" value="4"><span>Critical</span></label>
-        </fieldset>
-
-        <div class="row2">
-          <label class="chip"><input id="kev" type="checkbox"><span>Known exploited</span></label>
-          <label class="field inline-field">Sort
-            <select id="sort">
-              <option value="published">Newest published</option>
-              <option value="modified">Recently modified</option>
-              <option value="score">Highest CVSS</option>
-              <option value="epss">Highest EPSS</option>
-            </select>
-          </label>
+        <div class="navbar-brand-text">
+          <span class="navbar-name">CVE Alert</span>
+          <span class="navbar-badge">THREAT INTEL &bull; INFOMITY</span>
         </div>
+      </a>
 
-        <details class="more">
-          <summary>More filters</summary>
-          <div class="grid2">
-            <label class="field">Minimum EPSS (%)
-              <input id="epss" type="number" min="0" max="100" step="1" value="0" inputmode="numeric">
-            </label>
-            <label class="field">CWE
-              <input id="cwe" type="text" placeholder="CWE-79" autocomplete="off" autocapitalize="characters">
-            </label>
-          </div>
-        </details>
-      </div>
-
-      <div class="resultbar">
-        <p id="count" aria-live="polite"></p>
-        <button id="reset" class="btn btn-quiet btn-sm" type="button" hidden>Clear filters</button>
-      </div>
-
-      <ul id="rows" class="cves"></ul>
-
-      <nav class="pager" aria-label="Pagination">
-        <button id="prev" class="btn" type="button">Previous</button>
-        <span id="page"></span>
-        <button id="next" class="btn" type="button">Next</button>
+      <nav class="navbar-links">
+        <a href="#feed" class="nav-link">Live Feed</a>
+        <a href="#overview-section" class="nav-link">Severity</a>
+        <a href="#subscribe" class="nav-link">Email Alerts</a>
+        <a href="https://infomity.github.io/" target="_blank" rel="noopener noreferrer" class="nav-link">Infomity Studio &#8599;</a>
+        <a href="https://github.com/infomity/cvealerts" target="_blank" rel="noopener noreferrer" class="nav-link">GitHub</a>
       </nav>
+
+      <div class="navbar-actions">
+        <button type="button" id="themeBtn" class="theme-toggle-btn" aria-label="Toggle theme">
+          <span id="themeIcon">🌙</span>
+        </button>
+        <button type="button" class="btn-support-pill" data-support aria-label="Support Infomity on Patreon">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="color: #f43f5e;"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 5 6.1 5c2 0 3.4 1.1 4.2 2.4h3.4C14.5 6.1 15.9 5 17.9 5c3.4 0 5.2 3.4 3.7 6.8C19.5 16.4 12 21 12 21z"/></svg>
+          <span>Support</span>
+        </button>
+        <a class="btn-glow btn-sm" href="#subscribe">Get alerts</a>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false" onclick="toggleMobileMenu()">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Executive Studio Hero -->
+    <section class="hero-section">
+      <div style="max-width: 900px;">
+        <div style="margin-bottom: 1.5rem;">
+          <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>LIVE THREAT INTELLIGENCE &bull; ZERO TELEMETRY &bull; EDGE ARCHITECTURE</span>
+          </div>
+        </div>
+
+        <h1 class="gradient-text">
+          Real-Time CVE Intelligence &amp; Precision Alerts
+        </h1>
+
+        <p class="hero-desc">
+          Browse newly published Common Vulnerabilities and Exposures with instant client-side filtering by CVSS severity, CISA KEV exploitation, and EPSS likelihood, backed by daily automated email digests engineered by Infomity.
+        </p>
+
+        <div class="hero-ctas">
+          <a href="#feed" class="btn-glow">
+            <span>Explore Live CVEs</span>
+            <span>&darr;</span>
+          </a>
+          <a href="#subscribe" class="btn-glass">
+            <span>Set Up Daily Alerts</span>
+            <span style="color: var(--accent-color);">&rarr;</span>
+          </a>
+          <a href="https://infomity.github.io/" target="_blank" rel="noopener noreferrer" class="btn-glass">
+            <span>Infomity Studio</span>
+            <span style="font-size: 0.85rem; opacity: 0.8;">&#8599;</span>
+          </a>
+        </div>
+
+        <div id="meta" class="meta" role="status">Loading threat intelligence stream...</div>
+      </div>
     </section>
 
-    <aside id="subscribe" class="panel" aria-labelledby="sub-h">
-      <h2 id="sub-h">Get email alerts</h2>
-      <p class="muted">One digest a day with only the CVEs that match your filters. You confirm your address first.</p>
-      <form id="subform">
-        <label class="field">Email
-          <input name="email" type="email" required autocomplete="email" inputmode="email" maxlength="254" placeholder="you@example.com">
-        </label>
-        <label class="field">Minimum severity
-          <select name="minSeverity">
-            <option value="ALL">All</option><option value="LOW">Low+</option><option value="MEDIUM">Medium+</option>
-            <option value="HIGH" selected>High+</option><option value="CRITICAL">Critical only</option>
-          </select>
-        </label>
-        <label class="check"><input name="kevOnly" type="checkbox"><span>Only known-exploited CVEs</span></label>
+    <!-- Severity Telemetry Overview -->
+    <section id="overview-section" class="overview" aria-label="Severity telemetry overview">
+      <div class="overview-head">
+        <div class="overview-title">
+          <span class="overview-badge">SEVERITY TELEMETRY</span>
+          <h3>Vulnerability Distribution</h3>
+        </div>
+      </div>
+      <div id="sevbar" class="sevbar" role="img" aria-label="Severity distribution"></div>
+      <ul id="stats" class="legend"></ul>
+    </section>
 
-        <details class="more">
-          <summary>Narrow by product, keyword or CWE</summary>
-          <label class="field">Vendors or products
-            <small>Comma separated, for example microsoft, openssl</small>
-            <input name="vendors" type="text" autocomplete="off">
+    <!-- Main Workspace Layout -->
+    <div class="layout">
+      <!-- CVE Feed & Search -->
+      <section id="feed" aria-labelledby="feed-h">
+        <h2 id="feed-h" class="sr">CVE list</h2>
+
+        <div class="filters" role="search">
+          <div class="search">
+            <label class="sr" for="q">Search CVEs</label>
+            <input id="q" type="search" placeholder="Search CVE ID, product, vendor or keyword (e.g. Linux, Microsoft, OpenSSL)..." autocomplete="off" enterkeyhint="search">
+          </div>
+
+          <fieldset class="seg" id="sev">
+            <legend class="sr">Minimum severity</legend>
+            <label><input type="radio" name="sev" value="0" checked><span>All</span></label>
+            <label><input type="radio" name="sev" value="1"><span>Low+</span></label>
+            <label><input type="radio" name="sev" value="2"><span>Medium+</span></label>
+            <label><input type="radio" name="sev" value="3"><span>High+</span></label>
+            <label><input type="radio" name="sev" value="4"><span>Critical</span></label>
+          </fieldset>
+
+          <div class="row2">
+            <label class="chip"><input id="kev" type="checkbox"><span>Known exploited (CISA KEV)</span></label>
+            <label class="field inline-field">Sort
+              <select id="sort">
+                <option value="published">Newest published</option>
+                <option value="modified">Recently modified</option>
+                <option value="score">Highest CVSS</option>
+                <option value="epss">Highest EPSS</option>
+              </select>
+            </label>
+          </div>
+
+          <details class="more">
+            <summary>More filters</summary>
+            <div class="grid2">
+              <label class="field">Minimum EPSS (%)
+                <input id="epss" type="number" min="0" max="100" step="1" value="0" inputmode="numeric">
+              </label>
+              <label class="field">CWE
+                <input id="cwe" type="text" placeholder="CWE-79" autocomplete="off" autocapitalize="characters">
+              </label>
+            </div>
+          </details>
+        </div>
+
+        <div class="resultbar">
+          <p id="count" aria-live="polite"></p>
+          <button id="reset" class="btn btn-quiet btn-sm" type="button" hidden>Clear filters</button>
+        </div>
+
+        <ul id="rows" class="cves"></ul>
+
+        <nav class="pager" aria-label="Pagination">
+          <button id="prev" class="btn" type="button">&larr; Previous</button>
+          <span id="page"></span>
+          <button id="next" class="btn" type="button">Next &rarr;</button>
+        </nav>
+      </section>
+
+      <!-- Subscribe Bento Card -->
+      <aside id="subscribe" class="panel" aria-labelledby="sub-h">
+        <h2 id="sub-h">Get email alerts</h2>
+        <p class="muted">One daily digest with only the CVEs that match your exact stack and filters. You confirm your address first.</p>
+        <form id="subform">
+          <label class="field">Email Address
+            <input name="email" type="email" required autocomplete="email" inputmode="email" maxlength="254" placeholder="you@company.com">
           </label>
-          <label class="field">Keywords
-            <small>Comma separated</small>
-            <input name="keywords" type="text" autocomplete="off">
+          <label class="field">Minimum severity
+            <select name="minSeverity">
+              <option value="ALL">All Severities</option>
+              <option value="LOW">Low+</option>
+              <option value="MEDIUM">Medium+</option>
+              <option value="HIGH" selected>High+</option>
+              <option value="CRITICAL">Critical only</option>
+            </select>
           </label>
-          <label class="field">CWE IDs
-            <small>For example CWE-79, CWE-89</small>
-            <input name="cwes" type="text" autocomplete="off" autocapitalize="characters">
+          <label class="check">
+            <input name="kevOnly" type="checkbox">
+            <span>Only known-exploited CVEs (CISA KEV)</span>
           </label>
-          <label class="field">Minimum EPSS (%)
-            <input name="minEpss" type="number" min="0" max="100" value="0" inputmode="numeric">
-          </label>
-        </details>
 
-        <div id="ts" class="ts"></div>
-        <button type="submit" id="subbtn" class="btn btn-primary btn-block">Subscribe</button>
-        <p id="subMsg" class="msg" role="status"></p>
-        <p class="fine">Your email is used only to send alerts. Every message includes an unsubscribe link.</p>
-      </form>
-    </aside>
-  </div>
-</main>
+          <details class="more">
+            <summary>Narrow by product, keyword or CWE</summary>
+            <label class="field">Vendors or products
+              <small>Comma separated, for example microsoft, openssl, nginx</small>
+              <input name="vendors" type="text" autocomplete="off">
+            </label>
+            <label class="field">Keywords
+              <small>Comma separated (e.g. remote code, buffer overflow)</small>
+              <input name="keywords" type="text" autocomplete="off">
+            </label>
+            <label class="field">CWE IDs
+              <small>For example CWE-79, CWE-89</small>
+              <input name="cwes" type="text" autocomplete="off" autocapitalize="characters">
+            </label>
+            <label class="field">Minimum EPSS (%)
+              <input name="minEpss" type="number" min="0" max="100" value="0" inputmode="numeric">
+            </label>
+          </details>
 
-<a id="fab" class="btn btn-primary fab" href="#subscribe">Get alerts</a>
-
-<footer class="foot">
-  <div class="wrap">
-    <p>Data from NVD (NIST), CISA KEV and FIRST EPSS. Not affiliated with or endorsed by NIST, CISA or FIRST. Severity can lag for newly published CVEs.</p>
-    <p>Open source under the <a href="https://github.com/hissain/cvealerts/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a> &middot; <a href="https://github.com/hissain/cvealerts" target="_blank" rel="noopener noreferrer">Source on GitHub</a> &middot; <button type="button" class="linkbtn" data-support>Support Infomity on Patreon</button></p>
-  </div>
-</footer>
-
-<dialog id="supportDlg" class="dlg" aria-labelledby="sup-h">
-  <div class="dlg-in">
-    <div class="dlg-head">
-      <h2 id="sup-h">Support CVE Alert</h2>
-      <button type="button" class="dlg-x" id="supportClose" aria-label="Close">&times;</button>
+          <div id="ts" class="ts"></div>
+          <button type="submit" id="subbtn" class="btn btn-primary btn-block">Subscribe to Digest</button>
+          <p id="subMsg" class="msg" role="status"></p>
+          <p class="fine">Your email is strictly used to deliver verified vulnerability alerts. Every message includes a one-click unsubscribe link.</p>
+        </form>
+      </aside>
     </div>
-    <div class="qr"><img src="/assets/qr_patreon.png" width="592" height="592" alt="QR code for patreon.com/Infomity" loading="lazy"></div>
-    <p class="muted">CVE Alert is free and open source. Scan the code or use the button to support ongoing development, hosting and updates.</p>
-    <a class="btn btn-primary btn-block" href="https://www.patreon.com/Infomity" target="_blank" rel="noopener noreferrer">Support Infomity on Patreon</a>
-  </div>
-</dialog>
-<script src="/app.js" type="module"></script>
+  </main>
+
+  <!-- Mobile Floating Action Button -->
+  <a id="fab" class="btn btn-primary fab" href="#subscribe">Get alerts</a>
+
+  <!-- Modern Infomity Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="app-icon" style="width: 38px; height: 38px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: #10b981;">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <span class="footer-brand-title">Infomity &bull; CVE Alert</span>
+          <span class="footer-brand-subtitle">&copy; 2026 Infomity. Open-Access Software.</span>
+        </div>
+      </div>
+
+      <div class="footer-links-grid">
+        <a href="https://infomity.github.io/" target="_blank" rel="noopener noreferrer" class="footer-link">Infomity Studio</a>
+        <a href="https://infomity.github.io/bangla-keyboard/" target="_blank" rel="noopener noreferrer" class="footer-link">Bangla Keyboard</a>
+        <a href="https://github.com/infomity/jscipy" target="_blank" rel="noopener noreferrer" class="footer-link">jSciPy Library</a>
+        <a href="https://infomity.github.io/privacy/" target="_blank" rel="noopener noreferrer" class="footer-link">Studio Privacy</a>
+        <a href="https://github.com/infomity/cvealerts" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub Org</a>
+        <a href="https://hissain.github.io/" target="_blank" rel="noopener noreferrer" class="footer-link footer-link-highlight">Architect Profile &#8599;</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom-disclaimer">
+      <p>Data from NVD (NIST), CISA KEV and FIRST EPSS. Not affiliated with or endorsed by NIST, CISA or FIRST. Severity can lag for newly published CVEs.</p>
+      <p>Open source under the <a href="https://github.com/infomity/cvealerts/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a> &middot; <a href="https://github.com/infomity/cvealerts" target="_blank" rel="noopener noreferrer">Source on GitHub</a> &middot; <button type="button" class="linkbtn" data-support>Support Infomity on Patreon</button></p>
+    </div>
+  </footer>
+
+  <!-- Patreon Support Modal Dialog -->
+  <dialog id="supportDlg" class="dlg" aria-labelledby="sup-h">
+    <div class="dlg-in">
+      <div class="dlg-head">
+        <h2 id="sup-h">Support Infomity</h2>
+        <button type="button" class="dlg-x" id="supportClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="qr">
+        <img src="/assets/qr_patreon.png" width="592" height="592" alt="QR code for patreon.com/Infomity" loading="lazy">
+      </div>
+      <p class="muted">CVE Alert is 100% free, telemetry-free, and open source. Scan the code or use Patreon to support server costs, edge database hosting, and continuous threat feed engineering.</p>
+      <a class="btn btn-primary btn-block" href="https://www.patreon.com/Infomity" target="_blank" rel="noopener noreferrer">Support Infomity on Patreon &rarr;</a>
+    </div>
+  </dialog>
+
+  <script src="/app.js" type="module"></script>
 </body>
 </html>
