@@ -88,11 +88,36 @@ function item(c) {
         ${c.kev ? '<span class="kevtag" title="Listed in the CISA Known Exploited Vulnerabilities catalog"><span class="status-dot" style="background:#fca5a5; box-shadow:0 0 6px #ef4444; width:5px; height:5px;"></span>Known exploited</span>' : ""}
         <span class="when">Published ${esc(c.published.slice(0, 10))}</span>
       </div>
+
+      <p class="cve-summary">${esc(snippet)}</p>
+
       <details class="more-desc">
-        <summary><span class="snip">${esc(snippet)}</span><span class="sr">Show details</span><span class="hide">Hide details</span></summary>
-        <p class="full">${esc(c.desc)}</p>
-        ${tagsHtml}
-        ${refs ? `<div class="refs">${refs}</div>` : ""}
+        <summary class="cve-expand-trigger">
+          <span class="trigger-label trigger-expand">
+            <svg class="trigger-chevron" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <span>Technical Advisory &amp; Scope</span>
+          </span>
+          <span class="trigger-label trigger-collapse">
+            <svg class="trigger-chevron" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(180deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <span>Collapse Advisory</span>
+          </span>
+        </summary>
+        <div class="cve-drawer">
+          <div class="drawer-section">
+            <span class="drawer-label">Full Vulnerability Analysis</span>
+            <p class="full">${esc(c.desc)}</p>
+          </div>
+          ${tagsHtml ? `
+          <div class="drawer-section">
+            <span class="drawer-label">Affected Ecosystem &amp; Identifiers</span>
+            ${tagsHtml}
+          </div>` : ""}
+          ${refs ? `
+          <div class="drawer-section">
+            <span class="drawer-label">Official Advisory References</span>
+            <div class="refs">${refs}</div>
+          </div>` : ""}
+        </div>
       </details>
     </div>
     <div class="side">${c.epss != null ? `<b>${(c.epss * 100).toFixed(1)}%</b>` : "<b>&ndash;</b>"}EPSS</div>
@@ -131,6 +156,82 @@ $("reset").onclick = () => {
 // Floating "Get alerts" button on small screens: hide it while the form is on screen.
 if ("IntersectionObserver" in window) {
   new IntersectionObserver(([e]) => $("fab").classList.toggle("is-hidden", e.isIntersecting), { threshold: 0.05 }).observe($("subscribe"));
+}
+
+// Butter-smooth accordion expand & collapse animation for all details elements
+function initSmoothAccordion() {
+  document.addEventListener("click", (e) => {
+    const summary = e.target.closest("summary");
+    if (!summary) return;
+    const details = summary.parentElement;
+    if (!details || (!details.classList.contains("more-desc") && !details.classList.contains("more"))) return;
+
+    if (reducedMotion) return; // Allow native immediate behavior if visitor prefers reduced motion
+
+    e.preventDefault();
+
+    if (details.dataset.animating === "true") return;
+
+    if (details.open) {
+      // Smooth collapse
+      details.dataset.animating = "true";
+      details.style.overflow = "hidden";
+      const startHeight = details.offsetHeight;
+      const endHeight = summary.offsetHeight;
+
+      const animation = details.animate(
+        [
+          { height: `${startHeight}px`, opacity: 1 },
+          { height: `${endHeight}px`, opacity: 0.85 }
+        ],
+        {
+          duration: 320,
+          easing: "cubic-bezier(0.2, 0.8, 0.2, 1)"
+        }
+      );
+
+      animation.onfinish = () => {
+        details.open = false;
+        details.dataset.animating = "false";
+        details.style.height = "";
+        details.style.overflow = "";
+      };
+      animation.oncancel = () => {
+        details.dataset.animating = "false";
+        details.style.height = "";
+        details.style.overflow = "";
+      };
+    } else {
+      // Smooth expand
+      details.dataset.animating = "true";
+      details.style.overflow = "hidden";
+      const startHeight = summary.offsetHeight;
+      details.open = true;
+      const endHeight = details.offsetHeight;
+
+      const animation = details.animate(
+        [
+          { height: `${startHeight}px`, opacity: 0.7 },
+          { height: `${endHeight}px`, opacity: 1 }
+        ],
+        {
+          duration: 360,
+          easing: "cubic-bezier(0.16, 1, 0.3, 1)"
+        }
+      );
+
+      animation.onfinish = () => {
+        details.dataset.animating = "false";
+        details.style.height = "";
+        details.style.overflow = "";
+      };
+      animation.oncancel = () => {
+        details.dataset.animating = "false";
+        details.style.height = "";
+        details.style.overflow = "";
+      };
+    }
+  });
 }
 
 // ---- Subscribe form ----
@@ -175,6 +276,7 @@ $("subform").addEventListener("submit", async (ev) => {
 
 load();
 initTurnstile();
+initSmoothAccordion();
 
 // Support (Patreon) dialog
 {
