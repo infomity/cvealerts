@@ -117,6 +117,10 @@ function item(c) {
             <span class="drawer-label">Official Advisory References</span>
             <div class="refs">${refs}</div>
           </div>` : ""}
+          <div class="drawer-collapse-hint">
+            <span>Tap card to collapse</span>
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(180deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
         </div>
       </details>
     </div>
@@ -158,78 +162,106 @@ if ("IntersectionObserver" in window) {
   new IntersectionObserver(([e]) => $("fab").classList.toggle("is-hidden", e.isIntersecting), { threshold: 0.05 }).observe($("subscribe"));
 }
 
-// Butter-smooth accordion expand & collapse animation for all details elements
+function toggleDetailsSmooth(details, summary) {
+  if (reducedMotion) {
+    details.open = !details.open;
+    return;
+  }
+
+  if (details.dataset.animating === "true") return;
+
+  if (details.open) {
+    // Smooth collapse
+    details.dataset.animating = "true";
+    details.style.overflow = "hidden";
+    const startHeight = details.offsetHeight;
+    const endHeight = summary ? summary.offsetHeight : 36;
+
+    const animation = details.animate(
+      [
+        { height: `${startHeight}px`, opacity: 1 },
+        { height: `${endHeight}px`, opacity: 0.85 }
+      ],
+      {
+        duration: 320,
+        easing: "cubic-bezier(0.2, 0.8, 0.2, 1)"
+      }
+    );
+
+    animation.onfinish = () => {
+      details.open = false;
+      details.dataset.animating = "false";
+      details.style.height = "";
+      details.style.overflow = "";
+    };
+    animation.oncancel = () => {
+      details.dataset.animating = "false";
+      details.style.height = "";
+      details.style.overflow = "";
+    };
+  } else {
+    // Smooth expand
+    details.dataset.animating = "true";
+    details.style.overflow = "hidden";
+    const startHeight = summary ? summary.offsetHeight : 36;
+    details.open = true;
+    const endHeight = details.offsetHeight;
+
+    const animation = details.animate(
+      [
+        { height: `${startHeight}px`, opacity: 0.7 },
+        { height: `${endHeight}px`, opacity: 1 }
+      ],
+      {
+        duration: 360,
+        easing: "cubic-bezier(0.16, 1, 0.3, 1)"
+      }
+    );
+
+    animation.onfinish = () => {
+      details.dataset.animating = "false";
+      details.style.height = "";
+      details.style.overflow = "";
+    };
+    animation.oncancel = () => {
+      details.dataset.animating = "false";
+      details.style.height = "";
+      details.style.overflow = "";
+    };
+  }
+}
+
+// Butter-smooth accordion expand & collapse animation for all details elements and cards
 function initSmoothAccordion() {
   document.addEventListener("click", (e) => {
+    // 1. If clicking any link or interactive form element, allow normal behavior
+    if (e.target.closest("a, input, select, textarea, button:not(.cve-expand-trigger)")) {
+      return;
+    }
+
+    // 2. Ignore if user is selecting/highlighting text
+    const selection = window.getSelection();
+    if (selection && selection.toString().trim().length > 0) {
+      return;
+    }
+
+    // 3. If clicking anywhere on or inside a .cve card, toggle its details
+    const cveCard = e.target.closest(".cve");
+    if (cveCard) {
+      const details = cveCard.querySelector(".more-desc");
+      if (details) {
+        const summary = details.querySelector("summary");
+        e.preventDefault();
+        toggleDetailsSmooth(details, summary);
+        return;
+      }
+    }
+
+    // 4. Fallback for other standalone details elements like .more in filters or subscribe
     const summary = e.target.closest("summary");
-    if (!summary) return;
-    const details = summary.parentElement;
-    if (!details || (!details.classList.contains("more-desc") && !details.classList.contains("more"))) return;
-
-    if (reducedMotion) return; // Allow native immediate behavior if visitor prefers reduced motion
-
-    e.preventDefault();
-
-    if (details.dataset.animating === "true") return;
-
-    if (details.open) {
-      // Smooth collapse
-      details.dataset.animating = "true";
-      details.style.overflow = "hidden";
-      const startHeight = details.offsetHeight;
-      const endHeight = summary.offsetHeight;
-
-      const animation = details.animate(
-        [
-          { height: `${startHeight}px`, opacity: 1 },
-          { height: `${endHeight}px`, opacity: 0.85 }
-        ],
-        {
-          duration: 320,
-          easing: "cubic-bezier(0.2, 0.8, 0.2, 1)"
-        }
-      );
-
-      animation.onfinish = () => {
-        details.open = false;
-        details.dataset.animating = "false";
-        details.style.height = "";
-        details.style.overflow = "";
-      };
-      animation.oncancel = () => {
-        details.dataset.animating = "false";
-        details.style.height = "";
-        details.style.overflow = "";
-      };
-    } else {
-      // Smooth expand
-      details.dataset.animating = "true";
-      details.style.overflow = "hidden";
-      const startHeight = summary.offsetHeight;
-      details.open = true;
-      const endHeight = details.offsetHeight;
-
-      const animation = details.animate(
-        [
-          { height: `${startHeight}px`, opacity: 0.7 },
-          { height: `${endHeight}px`, opacity: 1 }
-        ],
-        {
-          duration: 360,
-          easing: "cubic-bezier(0.16, 1, 0.3, 1)"
-        }
-      );
-
-      animation.onfinish = () => {
-        details.dataset.animating = "false";
-        details.style.height = "";
-        details.style.overflow = "";
-      };
-      animation.oncancel = () => {
-        details.dataset.animating = "false";
-        details.style.height = "";
-        details.style.overflow = "";
-      };
+    if (summary && summary.parentElement && summary.parentElement.classList.contains("more")) {
+      e.preventDefault();
+      toggleDetailsSmooth(summary.parentElement, summary);
     }
   });
 }

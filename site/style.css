@@ -1432,6 +1432,7 @@ input:focus, select:focus {
               box-shadow 0.25s ease;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .cve:hover {
@@ -1727,6 +1728,40 @@ input:focus, select:focus {
 .refs a:hover, .ref-link:hover {
   color: var(--accent-hover);
   border-color: var(--accent-color);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.drawer-collapse-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed var(--card-border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  user-select: none;
+}
+
+[data-theme="light"] .drawer-collapse-hint {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.cve:hover .drawer-collapse-hint,
+.drawer-collapse-hint:hover {
+  color: var(--accent-color);
+  border-color: rgba(16, 185, 129, 0.4);
   background: rgba(16, 185, 129, 0.08);
 }
 
