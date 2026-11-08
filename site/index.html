@@ -35,8 +35,8 @@
   <header class="navbar-wrapper">
     <div class="navbar-container">
       <a href="/" class="navbar-brand" aria-label="CVE Alert Home">
-        <div class="app-icon" style="width: 38px; height: 38px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: #10b981;">
+        <div class="app-icon" style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 19px; height: 19px; color: #10b981;">
             <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
             <polyline points="2 17 12 22 22 17"></polyline>
             <polyline points="2 12 12 17 22 12"></polyline>
@@ -54,17 +54,19 @@
         <a href="#subscribe" class="nav-link">Email Alerts</a>
         <a href="https://infomity.github.io/" target="_blank" rel="noopener noreferrer" class="nav-link">Infomity Studio &#8599;</a>
         <a href="https://github.com/infomity/cvealerts" target="_blank" rel="noopener noreferrer" class="nav-link">GitHub</a>
+        <a href="#subscribe" class="nav-link nav-link-highlight mobile-only-link">Get Email Alerts &rarr;</a>
+        <button type="button" class="nav-link mobile-only-link linkbtn-nav" data-support>Support Infomity on Patreon &#9829;</button>
       </nav>
 
       <div class="navbar-actions">
         <button type="button" id="themeBtn" class="theme-toggle-btn" aria-label="Toggle theme">
           <span id="themeIcon">🌙</span>
         </button>
-        <button type="button" class="btn-support-pill" data-support aria-label="Support Infomity on Patreon">
+        <button type="button" class="btn-support-pill desktop-only-btn" data-support aria-label="Support Infomity on Patreon">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" style="color: #f43f5e;"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 5 6.1 5c2 0 3.4 1.1 4.2 2.4h3.4C14.5 6.1 15.9 5 17.9 5c3.4 0 5.2 3.4 3.7 6.8C19.5 16.4 12 21 12 21z"/></svg>
           <span>Support</span>
         </button>
-        <a class="btn-glow btn-sm" href="#subscribe">Get alerts</a>
+        <a class="btn-glow btn-sm desktop-only-btn" href="#subscribe">Get alerts</a>
         <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false" onclick="toggleMobileMenu()">
           <span class="hamburger-line"></span>
           <span class="hamburger-line"></span>
@@ -78,7 +80,7 @@
     <!-- Executive Studio Hero -->
     <section class="hero-section">
       <div style="max-width: 900px;">
-        <div style="margin-bottom: 1.5rem;">
+        <div style="margin-bottom: 1.25rem;">
           <div class="status-pill">
             <span class="status-dot"></span>
             <span>LIVE THREAT INTELLIGENCE &bull; ZERO TELEMETRY &bull; EDGE ARCHITECTURE</span>
